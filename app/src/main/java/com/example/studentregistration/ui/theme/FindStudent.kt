@@ -16,9 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.studentregistration.view.StudentViewModel
 
 @Composable
-fun FindStudent(navController: NavController) {
+fun FindStudent(
+    navController: NavController,
+    studentViewModel: StudentViewModel
+) {
 
     var studentId by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
@@ -42,11 +46,36 @@ fun FindStudent(navController: NavController) {
         )
 
         Button(onClick = {
-            message = if (studentId.isBlank()) {
-                "Please enter a Student ID"
-            } else {
-                "Database search not implemented yet"
+
+            val validId = studentId.toIntOrNull()
+
+            when {
+                studentId.isBlank() -> {
+                    message = "Please enter a Student ID"
+                }
+
+                validId == null || validId <= 0 -> {
+                    message = "Please enter a valid Student ID"
+                }
+
+                else -> {
+                    message = "Searching..."
+
+                    studentViewModel.findStudent(validId) { student ->
+
+                        message = if (student != null) {
+                            "Student Found!\n" +
+                                    "ID: ${student.id}\n" +
+                                    "Name: ${student.name}\n" +
+                                    "Course: ${student.course}\n" +
+                                    "Year: ${student.year}"
+                        } else {
+                            "Student not found"
+                        }
+                    }
+                }
             }
+
         }) {
             Text(text = "Search Student")
         }

@@ -16,9 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.studentregistration.view.StudentViewModel
 
 @Composable
-fun AddStudent(navController: NavController) {
+fun AddStudent(
+    navController: NavController,
+    studentViewModel: StudentViewModel
+) {
 
     var name by remember { mutableStateOf("") }
     var course by remember { mutableStateOf("") }
@@ -55,6 +59,7 @@ fun AddStudent(navController: NavController) {
         )
 
         Button(onClick = {
+
             val validYear = year.toIntOrNull()
 
             message = when {
@@ -64,9 +69,21 @@ fun AddStudent(navController: NavController) {
                 validYear == null || validYear !in 1..4 ->
                     "Year must be between 1 and 4"
 
-                else ->
-                    "Valid details. Database not connected yet."
+                else -> {
+                    studentViewModel.addStudent(
+                        name = name.trim(),
+                        course = course.trim(),
+                        year = validYear
+                    )
+
+                    name = ""
+                    course = ""
+                    year = ""
+
+                    "Student registration submitted!"
+                }
             }
+
         }) {
             Text(text = "Save Student")
         }
