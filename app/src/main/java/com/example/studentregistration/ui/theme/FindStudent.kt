@@ -41,28 +41,25 @@ fun FindStudent(
         OutlinedTextField(
             value = studentId,
             onValueChange = { studentId = it },
-            label = { Text("Student ID") },
+            label = { Text("Student ID or Name") },
             singleLine = true
         )
 
+
         Button(onClick = {
 
-            val validId = studentId.toIntOrNull()
+            val searchText = studentId.trim()
+            val validId = searchText.toIntOrNull()
 
             when {
-                studentId.isBlank() -> {
-                    message = "Please enter a Student ID"
+                searchText.isBlank() -> {
+                    message = "Please enter a Student ID or Name"
                 }
 
-                validId == null || validId <= 0 -> {
-                    message = "Please enter a valid Student ID"
-                }
-
-                else -> {
+                validId != null -> {
                     message = "Searching..."
 
                     studentViewModel.findStudent(validId) { student ->
-
                         message = if (student != null) {
                             "Student Found!\n" +
                                     "ID: ${student.id}\n" +
@@ -74,11 +71,30 @@ fun FindStudent(
                         }
                     }
                 }
+
+                else -> {
+                    message = "Searching..."
+
+                    studentViewModel.findStudentsByName(searchText) { students ->
+
+                        message = if (students.isNotEmpty()) {
+                            students.joinToString("\n\n") { student ->
+                                "ID: ${student.id}\n" +
+                                        "Name: ${student.name}\n" +
+                                        "Course: ${student.course}\n" +
+                                        "Year: ${student.year}"
+                            }
+                        } else {
+                            "Student not found"
+                        }
+                    }
+                }
             }
 
         }) {
             Text(text = "Search Student")
         }
+
 
         Text(text = message)
 

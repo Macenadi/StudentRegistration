@@ -69,19 +69,24 @@ fun AddStudent(
                 validYear == null || validYear !in 1..4 ->
                     "Year must be between 1 and 4"
 
+
                 else -> {
                     studentViewModel.addStudent(
                         name = name.trim(),
                         course = course.trim(),
                         year = validYear
-                    )
+                    ) { studentId ->
 
-                    name = ""
-                    course = ""
-                    year = ""
+                        message = "Student registered successfully!\nStudent ID: $studentId"
 
-                    "Student registration submitted!"
+                        name = ""
+                        course = ""
+                        year = ""
+                    }
+
+                    "Saving student..."
                 }
+
             }
 
         }) {

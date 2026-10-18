@@ -14,4 +14,7 @@ interface StudentDao {
     @Query("SELECT * FROM students WHERE id = :studentId")
     suspend fun getStudentById(studentId: Int): Student?
 
+    @Query("SELECT * FROM students WHERE name like :studentName")
+    suspend fun getStudentsByName(studentName: String): List<Student>
+
 }

@@ -14,7 +14,8 @@ class StudentViewModel(
     fun addStudent(
         name: String,
         course: String,
-        year: Int
+        year: Int,
+        onResult: (Long) -> Unit
     ) {
         viewModelScope.launch {
             val student = Student(
@@ -23,7 +24,8 @@ class StudentViewModel(
                 year = year
             )
 
-            studentDao.insertStudent(student)
+            val studentId = studentDao.insertStudent(student)
+            onResult(studentId)
         }
     }
 
@@ -34,6 +36,16 @@ class StudentViewModel(
         viewModelScope.launch {
             val student = studentDao.getStudentById(studentId)
             onResult(student)
+        }
+    }
+
+    fun findStudentsByName(
+        studentName: String,
+        onResult: (List<Student>) -> Unit
+    ) {
+        viewModelScope.launch {
+            val students = studentDao.getStudentsByName("%${studentName}%")
+            onResult(students)
         }
     }
 }
